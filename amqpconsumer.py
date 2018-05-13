@@ -3,6 +3,8 @@
 import configparser
 import pika
 from com.kkartikeya.home.weather.weather_pb2 import Weather
+from com.kkartikeya.home.internet.speed_pb2 import Speed
+from socket import socket, AF_INET, SOCK_DGRAM
 
 CONFIG_FILE_PATH='/Users/kk/work/personal/github.com/configuration/config.properties'
 
