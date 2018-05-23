@@ -10,7 +10,7 @@ class StatsdClient(object):
         """
         Sends statistics to the stats daemon over UDP
 
-        >>> from python_example import StatsdClient
+        >>> from statsdclient import StatsdClient
         """
         self.addr = (host, port)
 
