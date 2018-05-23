@@ -32,7 +32,7 @@ def consumeWeatherAMQPMessages( queue ):
     def callback(ch, method, properties, body):
         currentWeather=Weather()
         currentWeather.ParseFromString(body)
-        print(" [x] Received Weather Data: %s" % currentWeather)
+		print(" [x] Received Weather Data: %s" % currentWeather)
 		StatsdClient.send({'com.kkartikeya.home.weather.temp':"%s|g" % currentWeather.temp }, ("127.0.0.1", 8125))
 		StatsdClient.send({'com.kkartikeya.home.weather.humidity':"%s|g" % currentWeather.humidity }, ("127.0.0.1", 8125))
 		StatsdClient.send({'com.kkartikeya.home.weather.windspeed':"%s|g" % currentWeather.windspeed }, ("127.0.0.1", 8125))
