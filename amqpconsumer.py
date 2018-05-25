@@ -80,7 +80,7 @@ def consumePhoneMessages( queue ):
 
     def callback(ch, method, properties, body):
         print(" [x] Received Phone Data: %s" % body.decode())
-        message = body.decode.partition(':')
+        message = body.decode().partition(':')
         if len(message) == 3:
             StatsdClient.send({ message[0]:message[2] }, ("127.0.0.1", 8125))
 
