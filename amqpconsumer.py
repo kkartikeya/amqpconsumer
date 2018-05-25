@@ -7,7 +7,7 @@ from com.kkartikeya.home.weather.weather_pb2 import Weather
 from com.kkartikeya.home.internet.speed_pb2 import Speed
 from statsdclient import StatsdClient
 
-CONFIG_FILE_PATH='/Users/kk/work/personal/github.com/configuration/config.properties'
+CONFIG_FILE_PATH='/opt/configuration/config.properties'
 
 def getAMQPURL():
     config=configparser.RawConfigParser()
@@ -20,6 +20,8 @@ def consumeAMQPMessages( queue ):
         consumeWeatherAMQPMessages( queue )
     elif queue == 'internet':
         consumeBandwidthAMQPMessages( queue )
+    elif queue == 'phone':
+        consumePhoneMessages( queue )
 
 def consumeWeatherAMQPMessages( queue ):
     AMQPURL=getAMQPURL()
@@ -68,8 +70,27 @@ def consumeBandwidthAMQPMessages( queue ):
     print(' [*] Waiting for Bandwidth messages:')
     channel.start_consuming()
 
+def consumePhoneMessages( queue ):
+    AMQPURL=getAMQPURL()
+    params = pika.URLParameters(AMQPURL)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel() # start a channel
+
+    channel.queue_declare(queue)
+
+    def callback(ch, method, properties, body):
+        print(" [x] Received Phone Data: %s" % body)
+        StatsdClient.send({body }, ("127.0.0.1", 8125))
+
+    channel.basic_consume(callback,
+                          queue,
+                          no_ack=True)
+
+    print(' [*] Waiting for Phone messages:')
+    channel.start_consuming()
+
 def main():
-    queue = ('weather', 'internet')
+    queue = ('weather', 'internet', 'phone')
     threads = []
     for i in range(len(queue)):
         t = threading.Thread(name=queue[i], target=consumeAMQPMessages, args=(queue[i],))
