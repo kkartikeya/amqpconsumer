@@ -79,8 +79,10 @@ def consumePhoneMessages( queue ):
     channel.queue_declare(queue)
 
     def callback(ch, method, properties, body):
-        print(" [x] Received Phone Data: %s" % body)
-        StatsdClient.send({body }, ("127.0.0.1", 8125))
+        print(" [x] Received Phone Data: %s" % body.decode())
+        message = body.decode.partition(':')
+        if len(message) == 3:
+            StatsdClient.send({ message[0]:message[2] }, ("127.0.0.1", 8125))
 
     channel.basic_consume(callback,
                           queue,
